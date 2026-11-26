@@ -237,6 +237,7 @@ const game = {
   setWeather(name) { weather.apply(name); },
   setCamera(c) { camOffset = { ...c }; camSnapped = false; },
   collectRing(i) { if (mission) mission.onRing(i); },
+  hideRing(i) { rings.hideRing(i); },
   get mission() { return mission; },
   get flight() { return flight; },
   get state() { return state; },

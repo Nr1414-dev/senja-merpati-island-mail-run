@@ -86,7 +86,17 @@ export function createRings(scene) {
     if (beacon.visible) beacon.rotation.y += dt * 0.4;
   }
 
-  return { setActive, clear, setBeacon, hideBeacon, checkPass, update,
+  // Hide one ring's mesh, mirroring what checkPass does when the plane
+  // physically flies through it in live play. Screenshot staging uses this
+  // after collectRing so a collected ring does not linger in the frame,
+  // half-hidden behind the plane, and read as a target the player cannot
+  // see clearly.
+  function hideRing(i) {
+    const m = meshes[i];
+    if (m) m.visible = false;
+  }
+
+  return { setActive, clear, setBeacon, hideBeacon, checkPass, update, hideRing,
     get collected() { return collected; },
     get activeCount() { return active.length; },
     ringPos(i) { return RINGS[i]; },

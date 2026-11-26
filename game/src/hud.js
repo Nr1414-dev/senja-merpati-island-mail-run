@@ -6,7 +6,7 @@ import { clamp } from './random.js';
 const $ = (id) => document.getElementById(id);
 
 function compassLetter(deg) {
-  const dirs = ['U', 'TL', 'T', 'TG', 'S', 'BD', 'B', 'BL'];
+  const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
   return dirs[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
 }
 
@@ -15,7 +15,7 @@ export function createHud(callbacks) {
   const els = {
     alt: $('hud-alt'), spd: $('hud-spd'), hdg: $('hud-hdg'), tape: $('hud-tape'),
     fuel: $('hud-fuel-fill'), fuelText: $('hud-fuel-text'),
-    dmg: $('hud-dmg-fill'), thr: $('hud-thr-fill'),
+    dmg: $('hud-dmg-fill'),
     mission: $('hud-mission'), objective: $('hud-objective'),
     wpArrow: $('hud-wp-arrow'), wpDist: $('hud-wp-dist'),
     score: $('hud-score'), coins: $('hud-coins'), timer: $('hud-timer'),
@@ -171,7 +171,7 @@ export function createHud(callbacks) {
     for (let d = -60; d <= 60; d += 15) {
       const hd = Math.round((deg + d) / 15) * 15;
       const norm = ((hd % 360) + 360) % 360;
-      const label = norm % 90 === 0 ? ['U', 'T', 'S', 'B'][norm / 90] : String(norm);
+      const label = norm % 90 === 0 ? ['N', 'E', 'S', 'W'][norm / 90] : String(norm);
       ticks += `<span style="left:${50 + d * 0.9}%">${label}</span>`;
     }
     els.tape.innerHTML = ticks;
@@ -180,7 +180,6 @@ export function createHud(callbacks) {
     els.fuelText.textContent = `BBM ${Math.round(fuelPct)}%`;
     els.fuel.style.background = fuelPct < 25 ? '#e23b2e' : '#ffc233';
     els.dmg.style.width = `${clamp(f.damage, 0, 100)}%`;
-    els.thr.style.width = `${Math.round(f.throttle * 100)}%`;
     els.score.textContent = `Skor ${mission ? mission.score : 0}`;
     els.timer.textContent = mission && mission.timeLeft > 0
       ? `⏱ ${Math.ceil(mission.timeLeft)} dtk` : '';

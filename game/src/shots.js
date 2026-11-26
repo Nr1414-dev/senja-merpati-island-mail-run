@@ -8,12 +8,15 @@ const PRESETS = {
   // Cover: chase view, plane mid-flight toward rings 1-3, home runway behind,
   // Pulau Karang ahead. Every criterion-1 element in one frame. Ring 1 is
   // collected through the real handler so the HUD shows live progress
-  // (Skor 100, RING 1/3) instead of a standing-zero score.
+  // (Skor 100, RING 1/3) instead of a standing-zero score — and its mesh is
+  // hidden, exactly as in live flight, so no ring lingers half-hidden
+  // behind the plane. Camera pulled back and raised vs v3 so the plane is
+  // smaller and the next rings read fully clear ahead of it.
   cover: {
     mission: 0, weather: 'clear',
     collectRings: [0],
     plane: { x: -118, y: 40, z: -66, heading: 0.42, pitch: 0.02, roll: -0.08, speed: 42, throttle: 0.72 },
-    cam: { dist: 15, height: 5.5, lateral: 2.5 },
+    cam: { dist: 18, height: 7, lateral: 2.5 },
     // 90 frames: the staging toast (2.6 s) is long gone by capture, and the
     // slow software renderer still finishes well inside the shot timeout.
     settleFrames: 90,
@@ -60,8 +63,10 @@ export function stageShot(game, preset) {
   }
   if (preset.collectRings) {
     // Collect listed rings through the real handler to stage mid-mission
-    // progress (score + ring counter alive), exactly as a player would.
-    for (const i of preset.collectRings) game.collectRing(i);
+    // progress (score + ring counter alive), exactly as a player would —
+    // and hide each collected ring's mesh, exactly as checkPass does when
+    // the plane physically flies through a ring in live play.
+    for (const i of preset.collectRings) { game.collectRing(i); game.hideRing(i); }
   }
   game.setPlane(preset.plane);
   game.setWeather(preset.weather);

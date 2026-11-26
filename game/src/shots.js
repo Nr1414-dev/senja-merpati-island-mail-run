@@ -12,10 +12,13 @@ const PRESETS = {
   // hidden, exactly as in live flight, so no ring lingers half-hidden
   // behind the plane. Camera pulled back and raised vs v3 so the plane is
   // smaller and the next rings read fully clear ahead of it.
+  // Round 4: plane moved 55 m toward ring 1 (now ~57 m away) so the next
+  // ring reads big and instant in frame; camera unchanged — pulling it back
+  // further in v4 only shrank the rings (Nusa score fell 0.80 -> 0.70).
   cover: {
     mission: 0, weather: 'clear',
     collectRings: [0],
-    plane: { x: -118, y: 40, z: -66, heading: 0.42, pitch: 0.02, roll: -0.08, speed: 42, throttle: 0.72 },
+    plane: { x: -65, y: 40, z: -80, heading: 0.42, pitch: 0.02, roll: -0.08, speed: 42, throttle: 0.72 },
     cam: { dist: 18, height: 7, lateral: 2.5 },
     // 90 frames: the staging toast (2.6 s) is long gone by capture, and the
     // slow software renderer still finishes well inside the shot timeout.

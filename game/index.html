@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SENJA MERPATI — Island Mail Run</title>
+<link rel="stylesheet" href="./styles.css">
+<script type="importmap">{"imports": {"three": "./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+<canvas id="game" aria-label="Senja Merpati: terbangkan pesawat pos antarpulau saat senja"></canvas>
+
+<!-- Lit HUD: altitude, speed, heading + compass tape, fuel, damage, throttle -->
+<div id="hud" style="display:none">
+  <div class="hud-top">
+    <div class="hud-box" id="hud-instruments">
+      <div class="hud-big"><span class="hud-label">ALT</span><span id="hud-alt">0 m</span></div>
+      <div class="hud-big"><span class="hud-label">SPD</span><span id="hud-spd">0 km/h</span></div>
+      <div class="hud-big"><span class="hud-label">HDG</span><span id="hud-hdg">000° U</span></div>
+      <div id="hud-tape"></div>
+    </div>
+    <div class="hud-box" id="hud-mission-box">
+      <div id="hud-mission">Surat Pagi</div>
+      <div id="hud-objective">—</div>
+      <div id="hud-timer"></div>
+    </div>
+    <div class="hud-box" id="hud-score-box">
+      <div id="hud-score">Skor 0</div>
+      <div id="hud-coins">✉ 0</div>
+    </div>
+  </div>
+  <div class="hud-bottom">
+    <div class="hud-box" id="hud-bars">
+      <div class="bar-row"><span>BBM</span><div class="bar"><div id="hud-fuel-fill"></div></div><span id="hud-fuel-text">100%</span></div>
+      <div class="bar-row"><span>RUSAK</span><div class="bar"><div id="hud-dmg-fill"></div></div></div>
+      <div class="bar-row"><span>GAS</span><div class="bar"><div id="hud-thr-fill"></div></div></div>
+    </div>
+    <div class="hud-box" id="hud-wp">
+      <div id="hud-wp-arrow">⬆</div>
+      <div id="hud-wp-dist"></div>
+    </div>
+  </div>
+  <div id="hud-toast"></div>
+  <div id="hud-center-msg"></div>
+</div>
+
+<!-- Title screen -->
+<div id="screen-title" class="screen" style="display:flex">
+  <div class="panel">
+    <h1>SENJA MERPATI</h1>
+    <p class="subtitle">Island Mail Run — kurir surat antarpulau saat golden hour</p>
+    <p class="tagline">5 misi · 12 ring emas · 3 pulau · 2 landasan · 1 kapal induk · 3 pesawat · 9 upgrade</p>
+    <h2>Pilih pesawat</h2>
+    <div id="plane-list" class="cards"></div>
+    <h2>Pilih misi</h2>
+    <div id="mission-list" class="cards"></div>
+    <h2>Hangar — upgrade <span id="coins-title"></span></h2>
+    <div id="shop-list" class="shop"></div>
+    <button id="btn-start" class="big-btn">✈ TERBANG</button>
+    <p class="controls">Kontrol: ↑↓ pitch · ←→ belok · W/S gas · Spasi rem udara · P jeda · M suara</p>
+  </div>
+</div>
+
+<!-- Pause -->
+<div id="screen-pause" class="screen" style="display:none">
+  <div class="panel small">
+    <h1>JEDA</h1>
+    <button id="btn-resume" class="big-btn">Lanjutkan</button>
+    <button id="btn-restart" class="big-btn">Ulangi misi</button>
+    <button id="btn-menu" class="big-btn">Menu utama</button>
+  </div>
+</div>
+
+<!-- End of mission -->
+<div id="screen-end" class="screen" style="display:none">
+  <div class="panel small">
+    <h1 id="end-title">Misi Selesai</h1>
+    <div id="end-lines"></div>
+    <button id="btn-again" class="big-btn">Terbang lagi</button>
+    <button id="btn-end-menu" class="big-btn">Menu utama</button>
+  </div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

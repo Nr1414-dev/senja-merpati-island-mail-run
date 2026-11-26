@@ -23,6 +23,8 @@ export function createHud(callbacks) {
     att: $('hud-att'), thrBar: $('hud-thr-bar'), thrText: $('hud-thr-text'),
     panelScore: $('hud-panel-score'), panelRings: $('hud-panel-rings'),
     panelTime: $('hud-panel-time'), instruction: $('hud-instruction'),
+    dialSpd: $('hud-dial-spd'), dialAlt: $('hud-dial-alt'),
+    airframe: $('hud-panel-airframe'),
   };
   let toastTimer = 0;
   // Mission clock (counts up from mission start) + the active mission spec,
@@ -30,6 +32,65 @@ export function createHud(callbacks) {
   let elapsed = 0;
   let missionSpec = null;
   const attCtx = els.att ? els.att.getContext('2d') : null;
+  const dialSpdCtx = els.dialSpd ? els.dialSpd.getContext('2d') : null;
+  const dialAltCtx = els.dialAlt ? els.dialAlt.getContext('2d') : null;
+
+  // Round gauge: dark face, amber ring, tick marks over a 240-degree sweep,
+  // needle for the live value, unit printed at the top, value in the middle.
+  // Same sunset palette as the attitude indicator.
+  function drawDial(ctx, value, max, unit) {
+    if (!ctx) return;
+    const S = 92, R = S / 2;
+    const v = clamp(value, 0, max);
+    ctx.clearRect(0, 0, S, S);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(R, R, R - 2, 0, Math.PI * 2);
+    ctx.clip();
+    const face = ctx.createRadialGradient(R, R, 4, R, R, R);
+    face.addColorStop(0, '#2a1822');
+    face.addColorStop(1, '#140d12');
+    ctx.fillStyle = face;
+    ctx.fillRect(0, 0, S, S);
+    // Ticks: needle sweeps -120deg..+120deg from 12 o'clock.
+    const toRad = (deg) => (deg - 90) * Math.PI / 180;
+    for (let i = 0; i <= 10; i++) {
+      const a = toRad(-120 + i * 24);
+      const major = i % 5 === 0;
+      const r0 = major ? R - 12 : R - 8;
+      ctx.strokeStyle = major ? '#ffe9a8' : 'rgba(255, 217, 160, 0.55)';
+      ctx.lineWidth = major ? 2.5 : 1.5;
+      ctx.beginPath();
+      ctx.moveTo(R + Math.cos(a) * r0, R + Math.sin(a) * r0);
+      ctx.lineTo(R + Math.cos(a) * (R - 4), R + Math.sin(a) * (R - 4));
+      ctx.stroke();
+    }
+    const na = toRad(-120 + 240 * (v / max));
+    ctx.strokeStyle = '#ffc233';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(R, R);
+    ctx.lineTo(R + Math.cos(na) * (R - 14), R + Math.sin(na) * (R - 14));
+    ctx.stroke();
+    ctx.fillStyle = '#ffc233';
+    ctx.beginPath();
+    ctx.arc(R, R, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffc46b';
+    ctx.font = '700 12px ui-monospace, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(unit, R, R - 20);
+    ctx.fillStyle = '#ffe9a8';
+    ctx.font = '700 21px ui-monospace, monospace';
+    ctx.fillText(String(Math.round(v)), R, R + 20);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(255,196,107,0.8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(R, R, R - 2, 0, Math.PI * 2);
+    ctx.stroke();
+  }
 
   // Small attitude indicator: sunset sky above a dark ground, horizon bar
   // counter-rotated against the bank, fixed amber aircraft symbol on top.
@@ -126,6 +187,14 @@ export function createHud(callbacks) {
     // Dense bottom panel: live throttle, score, ring progress, mission clock.
     if (mission) elapsed += dt;
     drawAttitude(f.pitch || 0, f.roll || 0);
+    drawDial(dialSpdCtx, Math.round(f.speed * 3.6), 300, 'SPD');
+    drawDial(dialAltCtx, Math.max(0, Math.round(f.y)), 400, 'ALT');
+    // Airframe status, tied to the real damage value (same scale as the
+    // RUSAK bar): OK < 30, HURT < 70, CRIT at 70+.
+    const dmgNow = clamp(f.damage, 0, 100);
+    const af = dmgNow < 30 ? 'OK' : dmgNow < 70 ? 'HURT' : 'CRIT';
+    els.airframe.textContent = af;
+    els.airframe.style.color = af === 'OK' ? '#7dd87d' : af === 'HURT' ? '#ffc233' : '#ff6a5e';
     const thrPct = Math.round((f.throttle || 0) * 100);
     els.thrBar.style.width = `${thrPct}%`;
     els.thrText.textContent = `${thrPct}%`;

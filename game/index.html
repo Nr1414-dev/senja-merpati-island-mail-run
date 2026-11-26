@@ -35,6 +35,22 @@
       <div class="bar-row"><span>RUSAK</span><div class="bar"><div id="hud-dmg-fill"></div></div></div>
       <div class="bar-row"><span>GAS</span><div class="bar"><div id="hud-thr-fill"></div></div></div>
     </div>
+    <div class="hud-box" id="hud-panel">
+      <div id="hud-panel-row">
+        <canvas id="hud-att" width="92" height="92"></canvas>
+        <div id="hud-thr-wrap">
+          <span class="hud-mini-label">THR</span>
+          <div class="bar mini"><div id="hud-thr-bar"></div></div>
+          <span id="hud-thr-text">0%</span>
+        </div>
+        <div id="hud-progress">
+          <span class="hud-prog"><span class="hud-mini-label">SKOR</span><b id="hud-panel-score">0</b></span>
+          <span class="hud-prog"><span class="hud-mini-label">RING</span><b id="hud-panel-rings">0/3</b></span>
+          <span class="hud-prog"><span class="hud-mini-label">WAKTU</span><b id="hud-panel-time">0:00</b></span>
+        </div>
+      </div>
+      <div id="hud-instruction">✈ Lewati ring emas → mendarat di runway</div>
+    </div>
     <div class="hud-box" id="hud-wp">
       <div id="hud-wp-arrow">⬆</div>
       <div id="hud-wp-dist"></div>

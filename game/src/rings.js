@@ -100,6 +100,10 @@ export function createMission(mission, rings, onEvent) {
   let timeLeft = 0;
   let score = 0;
   let done = false;
+  // Rings collected across the whole mission (for the HUD progress counter).
+  let ringsCollected = 0;
+  const totalRings = mission.steps.reduce(
+    (n, s) => n + (s.type === 'rings' ? s.rings.length : 0), 0);
 
   function currentStep() { return mission.steps[stepIdx]; }
 
@@ -124,7 +128,7 @@ export function createMission(mission, rings, onEvent) {
   }
 
   function start() {
-    stepIdx = 0; score = 0; done = false;
+    stepIdx = 0; score = 0; done = false; ringsCollected = 0;
     startStep();
   }
 
@@ -132,6 +136,7 @@ export function createMission(mission, rings, onEvent) {
     const step = currentStep();
     if (!step || step.type !== 'rings') return;
     stepRingsDone++;
+    ringsCollected++;
     score += RING_SCORE;
     onEvent('ring', { index: i, score, left: step.rings.length - stepRingsDone });
     if (stepRingsDone >= step.rings.length) {
@@ -202,6 +207,8 @@ export function createMission(mission, rings, onEvent) {
   return { start, onRing, onFlyTo, onLand, tick, targetPos, currentStep,
     get stepLabel() { const s = currentStep(); return s ? s.label : 'Misi selesai'; },
     get score() { return score; },
+    get ringsDone() { return ringsCollected; },
+    get ringsTotal() { return totalRings; },
     get timeLeft() { return timeLeft; },
     get finished() { return done; },
     get stepIndex() { return stepIdx; },
